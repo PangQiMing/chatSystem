@@ -1,0 +1,397 @@
+info:
+  contact: {}
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录
+      parameters:
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 用户登录
+      tags:
+      - 用户认证模块
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册
+      parameters:
+      - description: 名字
+        in: query
+        name: name
+        type: string
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 用户注册
+      tags:
+      - 用户认证模块
+  /api/friend:
+    delete:
+      consumes:
+      - application/json
+      description: 删除好友
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: friend_email
+        in: query
+        name: friend_email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 删除好友
+      tags:
+      - 好友模块
+    get:
+      consumes:
+      - application/json
+      description: 查询所有好友
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 查询所有好友
+      tags:
+      - 好友模块
+    post:
+      consumes:
+      - application/json
+      description: 添加好友
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: friend_email
+        in: query
+        name: friend_email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 添加好友
+      tags:
+      - 好友模块
+  /api/group/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 解散群组
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: group_id
+        in: query
+        name: group_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 解散群组
+      tags:
+      - 群组模块
+  /api/group/groupMembers:
+    delete:
+      consumes:
+      - application/json
+      description: 退出群组
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: group_id
+        in: query
+        name: group_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 退出群组
+      tags:
+      - 群组模块
+  /api/group/groupMembers/insert:
+    post:
+      consumes:
+      - application/json
+      description: 加入群组
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: group_id
+        in: query
+        name: group_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 加入群组
+      tags:
+      - 群组模块
+  /api/group/groupsIManage:
+    get:
+      consumes:
+      - application/json
+      description: 我管理的群组
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 我管理的群组
+      tags:
+      - 群组模块
+  /api/group/insert:
+    post:
+      consumes:
+      - application/json
+      description: 创建群组
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: group_name
+        in: query
+        name: group_name
+        type: string
+      - description: notice
+        in: query
+        name: notice
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 创建群组
+      tags:
+      - 群组模块
+  /api/group/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新群组信息
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: id
+        in: query
+        name: id
+        type: string
+      - description: group_name
+        in: query
+        name: group_name
+        type: string
+      - description: notice
+        in: query
+        name: notice
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 更新群组信息
+      tags:
+      - 群组模块
+  /api/moment/all:
+    get:
+      consumes:
+      - application/json
+      description: 获取我的动态
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获取我的动态
+      tags:
+      - 朋友圈模块
+  /api/moment/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 删除我的动态
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: moment id
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 删除我的动态
+      tags:
+      - 朋友圈模块
+  /api/moment/insert:
+    post:
+      consumes:
+      - application/json
+      description: 发布我的动态
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: title
+        in: query
+        name: title
+        type: string
+      - description: description
+        in: query
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 发布我的动态
+      tags:
+      - 朋友圈模块
+  /api/user/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户信息
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获取用户信息
+      tags:
+      - 用户模块
+    put:
+      consumes:
+      - application/json
+      description: 更新用户信息
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        type: string
+      - description: 名字
+        in: query
+        name: name
+        type: string
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 更新用户信息
+      tags:
+      - 用户模块
+swagger: "2.0"
