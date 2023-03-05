@@ -11,6 +11,8 @@ import (
 type UserService interface {
 	Update(user dto.UserUpdateDTO) entity.User
 	Profile(userID string) entity.User
+	ChangePass(userChangePass entity.User) entity.User
+	FindByEmail(email string) entity.User
 }
 
 type userService struct {
@@ -33,4 +35,13 @@ func (service *userService) Update(user dto.UserUpdateDTO) entity.User {
 
 func (service *userService) Profile(userID string) entity.User {
 	return service.userRepository.ProfileUser(userID)
+}
+
+func (service *userService) FindByEmail(email string) entity.User {
+	return service.userRepository.FindByEmail(email)
+}
+
+func (service *userService) ChangePass(UserChangePass entity.User) entity.User {
+	changePass := service.userRepository.ChangePass(UserChangePass)
+	return changePass
 }

@@ -18,48 +18,48 @@ type MomentService interface {
 	IsAllowedToEdit(userID string, momentID uint64) bool
 }
 
-type momentService struct {
-	momentRepository repository.MomentRepository
+type circleService struct {
+	circleRepository repository.CircleRepository
 }
 
-func NewBookService(momentRepository repository.MomentRepository) MomentService {
-	return &momentService{momentRepository: momentRepository}
+func NewCircleService(circleRepository repository.CircleRepository) MomentService {
+	return &circleService{circleRepository: circleRepository}
 }
 
-func (service *momentService) Insert(momentCreateDTO dto.CircleCreateDTO) entity.Circle {
-	var moment entity.Circle
-	err := smapping.FillStruct(&moment, smapping.MapFields(&momentCreateDTO))
+func (service *circleService) Insert(momentCreateDTO dto.CircleCreateDTO) entity.Circle {
+	var circle entity.Circle
+	err := smapping.FillStruct(&circle, smapping.MapFields(&momentCreateDTO))
 	if err != nil {
 		log.Fatalf("Failed map %v", err)
 	}
-	resMoment := service.momentRepository.InsertBook(moment)
-	return resMoment
+	result := service.circleRepository.Insert(circle)
+	return result
 }
 
-func (service *momentService) Update(momentUpdateDTO dto.CircleUpdateDTO) entity.Circle {
+func (service *circleService) Update(circleUpdateDTO dto.CircleUpdateDTO) entity.Circle {
 	var moment entity.Circle
-	err := smapping.FillStruct(&moment, smapping.MapFields(&momentUpdateDTO))
+	err := smapping.FillStruct(&moment, smapping.MapFields(&circleUpdateDTO))
 	if err != nil {
 		log.Fatalf("Failed map %v", err)
 	}
-	resMoment := service.momentRepository.UpdateBook(moment)
+	resMoment := service.circleRepository.Update(moment)
 	return resMoment
 }
 
-func (service *momentService) Delete(moment entity.Circle) {
-	service.momentRepository.DeleteBook(moment)
+func (service *circleService) Delete(circle entity.Circle) {
+	service.circleRepository.Delete(circle)
 }
 
-func (service *momentService) All(userID uint64) []entity.Circle {
-	return service.momentRepository.AllBook(userID)
+func (service *circleService) All(userID uint64) []entity.Circle {
+	return service.circleRepository.All(userID)
 }
 
-func (service *momentService) FindByID(momentID uint64) entity.Circle {
-	return service.momentRepository.FindBookByID(momentID)
+func (service *circleService) FindByID(circleID uint64) entity.Circle {
+	return service.circleRepository.FindByID(circleID)
 }
 
-func (service *momentService) IsAllowedToEdit(userID string, momentID uint64) bool {
-	moment := service.momentRepository.FindBookByID(momentID)
-	id := fmt.Sprintf("%v", moment.UserID)
+func (service *circleService) IsAllowedToEdit(userID string, circleID uint64) bool {
+	circle := service.circleRepository.FindByID(circleID)
+	id := fmt.Sprintf("%v", circle.UserID)
 	return userID == id
 }

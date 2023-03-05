@@ -5,46 +5,46 @@ import (
 	"gorm.io/gorm"
 )
 
-type MomentRepository interface {
-	InsertBook(moment entity.Circle) entity.Circle
-	UpdateBook(moment entity.Circle) entity.Circle
-	DeleteBook(moment entity.Circle)
-	AllBook(userID uint64) []entity.Circle
-	FindBookByID(momentID uint64) entity.Circle
+type CircleRepository interface {
+	Insert(circle entity.Circle) entity.Circle
+	Update(circle entity.Circle) entity.Circle
+	Delete(circle entity.Circle)
+	All(userID uint64) []entity.Circle
+	FindByID(circleID uint64) entity.Circle
 }
 
-type momentRepository struct {
+type circleRepository struct {
 	connection *gorm.DB
 }
 
-func NewMomentRepository(db *gorm.DB) MomentRepository {
-	return &momentRepository{connection: db}
+func NewCircleRepository(db *gorm.DB) CircleRepository {
+	return &circleRepository{connection: db}
 }
 
-func (db *momentRepository) InsertBook(moment entity.Circle) entity.Circle {
-	db.connection.Save(&moment)
-	db.connection.Preload("User").Find(&moment)
-	return moment
+func (db *circleRepository) Insert(circle entity.Circle) entity.Circle {
+	db.connection.Save(&circle)
+	db.connection.Preload("User").Find(&circle)
+	return circle
 }
 
-func (db *momentRepository) UpdateBook(moment entity.Circle) entity.Circle {
-	db.connection.Save(&moment)
-	db.connection.Preload("User").Find(&moment)
-	return moment
+func (db *circleRepository) Update(circle entity.Circle) entity.Circle {
+	db.connection.Save(&circle)
+	db.connection.Preload("User").Find(&circle)
+	return circle
 }
 
-func (db *momentRepository) DeleteBook(moment entity.Circle) {
-	db.connection.Delete(&moment)
+func (db *circleRepository) Delete(circle entity.Circle) {
+	db.connection.Delete(&circle)
 }
 
-func (db *momentRepository) AllBook(userID uint64) []entity.Circle {
-	var moments []entity.Circle
-	db.connection.Preload("User").Where("user_id = ?", userID).Find(&moments)
-	return moments
+func (db *circleRepository) All(userID uint64) []entity.Circle {
+	var circles []entity.Circle
+	db.connection.Preload("User").Where("user_id = ?", userID).Find(&circles)
+	return circles
 }
 
-func (db *momentRepository) FindBookByID(momentID uint64) entity.Circle {
-	var moment entity.Circle
-	db.connection.Preload("User").Find(&moment, momentID)
-	return moment
+func (db *circleRepository) FindByID(circleID uint64) entity.Circle {
+	var circle entity.Circle
+	db.connection.Preload("User").Find(&circle, circleID)
+	return circle
 }

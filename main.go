@@ -19,7 +19,7 @@ var (
 
 	//Repository
 	userRepository         = repository.NewUserConnection(DB)
-	momentRepository       = repository.NewMomentRepository(DB)
+	circleRepository       = repository.NewCircleRepository(DB)
 	friendRepository       = repository.NewFriendRepository(DB)
 	groupRepository        = repository.NewGroupRepository(DB)
 	groupMembersRepository = repository.NewGroupMembersRepository(DB)
@@ -28,7 +28,7 @@ var (
 	authService         = service.NewAuthService(userRepository)
 	jwtService          = service.NewJWTService()
 	userService         = service.NewUserService(userRepository)
-	momentService       = service.NewBookService(momentRepository)
+	circleService       = service.NewCircleService(circleRepository)
 	friendService       = service.NewFriendService(friendRepository)
 	groupService        = service.NewGroupService(groupRepository)
 	groupMembersService = service.NewGroupMembersService(groupMembersRepository)
@@ -36,7 +36,7 @@ var (
 	//Controller
 	authController         = controller.NewAuthController(authService, jwtService)
 	userController         = controller.NewUserController(userService, jwtService)
-	momentController       = controller.NewMomentController(momentService, jwtService)
+	circleController       = controller.NewMomentController(circleService, jwtService)
 	friendController       = controller.NewFriendController(friendService, jwtService)
 	groupController        = controller.NewGroupController(groupService, jwtService)
 	groupMembersController = controller.NewGroupMembersController(groupMembersService, jwtService)
@@ -46,7 +46,7 @@ func main() {
 	defer config.CloseDatabaseConnection(DB)
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
-
+	r.Static("/static", "./static")
 	//swagger
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -62,16 +62,17 @@ func main() {
 	userRouters := r.Group("api/user", middleware.AuthorizeJWT(jwtService))
 	{
 		userRouters.GET("profile", userController.Profile)
-		userRouters.PUT("profile", userController.Update)
+		userRouters.POST("profile", userController.ModifyProfile)
+		userRouters.POST("profile/change_password", userController.ChangePassword)
 	}
 
-	momentRouters := r.Group("api/moment", middleware.AuthorizeJWT(jwtService))
+	momentRouters := r.Group("api/circle", middleware.AuthorizeJWT(jwtService))
 	{
-		momentRouters.POST("/insert", momentController.Insert)
-		momentRouters.DELETE("/delete", momentController.Delete)
-		momentRouters.PUT("/update", momentController.Update)
-		momentRouters.GET("/all", momentController.All)
-		momentRouters.GET("/find", momentController.FindByID)
+		momentRouters.POST("/insert", circleController.Insert)
+		momentRouters.DELETE("/delete", circleController.Delete)
+		momentRouters.PUT("/update", circleController.Update)
+		momentRouters.GET("/all", circleController.All)
+		momentRouters.GET("/find", circleController.FindByID)
 	}
 
 	friendRouters := r.Group("api/friend", middleware.AuthorizeJWT(jwtService))

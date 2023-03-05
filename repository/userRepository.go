@@ -14,6 +14,7 @@ type UserRepository interface {
 	IsDuplicateEmail(email string) (tx *gorm.DB)
 	FindByEmail(email string) entity.User
 	ProfileUser(UserID string) entity.User
+	ChangePass(changePass entity.User) entity.User
 }
 
 type userConn struct {
@@ -31,7 +32,6 @@ func (db *userConn) AddUser(user entity.User) entity.User {
 	return user
 }
 
-// UpdateUser 更新用户密码
 func (db *userConn) UpdateUser(user entity.User) entity.User {
 	if user.Password != "" {
 		user.Password = hashAndSalt([]byte(user.Password))
@@ -70,15 +70,22 @@ func (db *userConn) FindByEmail(email string) entity.User {
 // ProfileUser 用户的详细信息
 func (db *userConn) ProfileUser(userID string) entity.User {
 	var user entity.User
-	db.connDB.Preload("Circle").Preload("Circle.User").Find(&user, userID)
+	//db.connDB.Preload("Circle").Preload("Circle.User").Find(&user, userID)
+	db.connDB.Find(&user, userID)
 	return user
+}
+
+func (db *userConn) ChangePass(changePass entity.User) entity.User {
+	changePass.Password = hashAndSalt([]byte(changePass.Password))
+	db.connDB.Save(&changePass)
+	return changePass
 }
 
 // 加密密码
 func hashAndSalt(password []byte) string {
 	hash, err := bcrypt.GenerateFromPassword(password, bcrypt.MinCost)
 	if err != nil {
-		log.Println("[文件:repository/userRepository.go:81] 加密密码失败...")
+		log.Println("加密密码失败...")
 	}
 	return string(hash)
 }
