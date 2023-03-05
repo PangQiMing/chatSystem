@@ -13,6 +13,7 @@ type UserService interface {
 	Profile(userID string) entity.User
 	ChangePass(userChangePass entity.User) entity.User
 	FindByEmail(email string) entity.User
+	VerifyCredential(email string, password string) interface{}
 }
 
 type userService struct {
@@ -39,6 +40,10 @@ func (service *userService) Profile(userID string) entity.User {
 
 func (service *userService) FindByEmail(email string) entity.User {
 	return service.userRepository.FindByEmail(email)
+}
+
+func (service *userService) VerifyCredential(email string, password string) interface{} {
+	return service.userRepository.VerifyCredential(email, password)
 }
 
 func (service *userService) ChangePass(UserChangePass entity.User) entity.User {

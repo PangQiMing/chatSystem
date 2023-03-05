@@ -42,7 +42,7 @@ func (c *authController) Login(ctx *gin.Context) {
 	var loginDTO dto.LoginDTO
 	errDTO := ctx.ShouldBind(&loginDTO)
 	if errDTO != nil {
-		response := helper.BuildErrResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
+		response := helper.BuildErrResponse("处理请求错误...", errDTO.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}

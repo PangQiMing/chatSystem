@@ -103,9 +103,15 @@ func (u *userController) Profile(ctx *gin.Context) {
 }
 
 func (u *userController) ChangePassword(ctx *gin.Context) {
-	email := ctx.PostForm("email")
-	password := ctx.PostForm("password")
-	newPassword := ctx.PostForm("new_password")
+	var userChangePass dto.UserChangePass
+	errDTO := ctx.ShouldBind(&userChangePass)
+	if errDTO != nil {
+		log.Println("HHH")
+		response := helper.BuildErrResponse("处理请求失败...", errDTO.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
 	authHeader := ctx.GetHeader("Authorization")
 	token, errToken := u.jwtService.ValidateToken(authHeader)
 	if errToken != nil {
@@ -116,16 +122,19 @@ func (u *userController) ChangePassword(ctx *gin.Context) {
 	if err != nil {
 		panic(err.Error())
 	}
-	user := u.userService.FindByEmail(email)
-	if comparePassword(user.Password, []byte(password)) {
+
+	user := u.userService.FindByEmail(userChangePass.Email)
+	log.Println(user.Password)
+	if comparePassword(user.Password, []byte(userChangePass.Password)) {
 		user.UserId = id
-		user.Password = newPassword
+		user.Password = userChangePass.NewPassword
 		result := u.userService.ChangePass(user)
 		response := helper.BuildResponse(true, "修改密码成功", result)
 		ctx.JSON(http.StatusOK, response)
+	} else {
+		response := helper.BuildErrResponse("用户密码不正确", "用户密码不正确", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
-	response := helper.BuildErrResponse("用户密码不正确", "用户密码不正确", helper.EmptyObj{})
-	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 }
 
 func comparePassword(hashedPassword string, plainPassword []byte) bool {

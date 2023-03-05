@@ -16,7 +16,6 @@ type MomentController interface {
 	All(ctx *gin.Context)
 	FindByID(ctx *gin.Context)
 	Insert(ctx *gin.Context)
-	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 }
 
@@ -102,30 +101,6 @@ func (b *momentController) Insert(ctx *gin.Context) {
 		result := b.momentService.Insert(momentCreateDTO)
 		response := helper.BuildResponse(true, "ok!", result)
 		ctx.JSON(http.StatusOK, response)
-	}
-}
-
-// Update 动态不需要更新
-func (b *momentController) Update(ctx *gin.Context) {
-	var momentUpdateDTO dto.CircleUpdateDTO
-	errDTO := ctx.ShouldBind(&momentUpdateDTO)
-	if errDTO != nil {
-		response := helper.BuildErrResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
-		ctx.AbortWithStatusJSON(http.StatusOK, response)
-	}
-	authHeader := ctx.GetHeader("Authorization")
-	userID := b.getUserIdByToken(authHeader)
-	if b.momentService.IsAllowedToEdit(userID, momentUpdateDTO.ID) {
-		id, err := strconv.ParseUint(userID, 10, 64)
-		if err == nil {
-			momentUpdateDTO.UserID = id
-		}
-		result := b.momentService.Update(momentUpdateDTO)
-		response := helper.BuildResponse(true, "ok!", result)
-		ctx.JSON(http.StatusOK, response)
-	} else {
-		response := helper.BuildErrResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
 }
 

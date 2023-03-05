@@ -66,13 +66,12 @@ func main() {
 		userRouters.POST("profile/change_password", userController.ChangePassword)
 	}
 
-	momentRouters := r.Group("api/circle", middleware.AuthorizeJWT(jwtService))
+	circleRouters := r.Group("api/circle", middleware.AuthorizeJWT(jwtService))
 	{
-		momentRouters.POST("/insert", circleController.Insert)
-		momentRouters.DELETE("/delete", circleController.Delete)
-		momentRouters.PUT("/update", circleController.Update)
-		momentRouters.GET("/all", circleController.All)
-		momentRouters.GET("/find", circleController.FindByID)
+		circleRouters.POST("/insert", circleController.Insert)
+		circleRouters.DELETE("/delete", circleController.Delete)
+		circleRouters.GET("/all", circleController.All)
+		circleRouters.GET("/find", circleController.FindByID)
 	}
 
 	friendRouters := r.Group("api/friend", middleware.AuthorizeJWT(jwtService))
