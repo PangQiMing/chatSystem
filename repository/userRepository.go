@@ -9,10 +9,12 @@ import (
 
 type UserRepository interface {
 	AddUser(user entity.User) entity.User
+	UpdateUserStatus(user entity.User) entity.User
 	UpdateUser(user entity.User) entity.User
 	VerifyCredential(email string, password string) interface{}
 	IsDuplicateEmail(email string) (tx *gorm.DB)
 	FindByEmail(email string) entity.User
+	FindUserByID(id uint64) entity.User
 	ProfileUser(UserID string) entity.User
 	ChangePass(changePass entity.User) entity.User
 }
@@ -28,6 +30,12 @@ func NewUserConnection(db *gorm.DB) UserRepository {
 // AddUser 注册用户
 func (db *userConn) AddUser(user entity.User) entity.User {
 	user.Password = hashAndSalt([]byte(user.Password))
+	db.connDB.Save(&user)
+	return user
+}
+
+// UpdateUserStatus 更新用户在线状态,1表示在线，0表示不在线
+func (db *userConn) UpdateUserStatus(user entity.User) entity.User {
 	db.connDB.Save(&user)
 	return user
 }
@@ -64,6 +72,13 @@ func (db *userConn) IsDuplicateEmail(email string) (tx *gorm.DB) {
 func (db *userConn) FindByEmail(email string) entity.User {
 	var user entity.User
 	db.connDB.Where("email = ?", email).Take(&user)
+	return user
+}
+
+// FindUserByID 根据ID找到用户
+func (db *userConn) FindUserByID(id uint64) entity.User {
+	var user entity.User
+	db.connDB.Where("user_id = ?", id).Take(&user)
 	return user
 }
 

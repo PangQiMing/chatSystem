@@ -6,6 +6,7 @@ import (
 	"chat/helper"
 	"chat/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -42,10 +43,12 @@ func (c *authController) Login(ctx *gin.Context) {
 	var loginDTO dto.LoginDTO
 	errDTO := ctx.ShouldBind(&loginDTO)
 	if errDTO != nil {
-		response := helper.BuildErrResponse("处理请求错误...", errDTO.Error(), helper.EmptyObj{})
+		log.Println(errDTO)
+		response := helper.BuildErrResponse("处理请求失败...", errDTO.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
+
 	authResult := c.authService.VerifyCredential(loginDTO.Email, loginDTO.Password)
 	if v, ok := authResult.(entity.User); ok {
 		generatedToken := c.jwtService.GeneratedToken(strconv.FormatUint(v.UserId, 10))

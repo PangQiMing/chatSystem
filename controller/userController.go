@@ -17,6 +17,7 @@ type UserController interface {
 	ModifyProfile(ctx *gin.Context)
 	Profile(ctx *gin.Context)
 	ChangePassword(ctx *gin.Context)
+	LogoutUser(ctx *gin.Context)
 }
 
 type userController struct {
@@ -26,6 +27,25 @@ type userController struct {
 
 func NewUserController(userService service.UserService, jwtService service.JWTService) UserController {
 	return &userController{userService: userService, jwtService: jwtService}
+}
+
+func (u *userController) LogoutUser(ctx *gin.Context) {
+	authHeader := ctx.GetHeader("Authorization")
+	token, err := u.jwtService.ValidateToken(authHeader)
+	if err != nil {
+		panic(err.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	if err != nil {
+		panic(err.Error())
+	}
+	user := u.userService.FindUserByID(id)
+	log.Println(user)
+	user.UserStatus = 0
+	result := u.userService.UpdateUserStatus(user)
+	response := helper.BuildResponse(true, "账号已退出", result)
+	ctx.JSON(http.StatusOK, response)
 }
 
 // ModifyProfile 更新用户信息
@@ -106,7 +126,6 @@ func (u *userController) ChangePassword(ctx *gin.Context) {
 	var userChangePass dto.UserChangePass
 	errDTO := ctx.ShouldBind(&userChangePass)
 	if errDTO != nil {
-		log.Println("HHH")
 		response := helper.BuildErrResponse("处理请求失败...", errDTO.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return

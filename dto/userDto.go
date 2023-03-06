@@ -15,12 +15,3 @@ type UserChangePass struct {
 	Password    string `json:"password" form:"password,omitempty,"`
 	NewPassword string `json:"new_password" form:"new_password,omitempty,"`
 }
-
-//type UserCreateDTO struct {
-//	Avatar   string `json:"avatar" form:"avatar"`
-//	NickName string `json:"nick_name" form:"nick_name" binding:"required"`
-//	Email    string `json:"email" form:"email" binding:"required" validate:"email"`
-//	Password string `json:"password,omitempty" form:"password,omitempty" binding:"required" validate:"min:6"`
-//	Age      uint64 `json:"age,omitempty" form:"age,omitempty"`
-//	Sex      uint64 `json:"sex,omitempty" form:"sex,omitempty"`
-//}

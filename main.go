@@ -36,7 +36,7 @@ var (
 	//Controller
 	authController         = controller.NewAuthController(authService, jwtService)
 	userController         = controller.NewUserController(userService, jwtService)
-	circleController       = controller.NewMomentController(circleService, jwtService)
+	circleController       = controller.NewCircleController(circleService, jwtService)
 	friendController       = controller.NewFriendController(friendService, jwtService)
 	groupController        = controller.NewGroupController(groupService, jwtService)
 	groupMembersController = controller.NewGroupMembersController(groupMembersService, jwtService)
@@ -64,14 +64,14 @@ func main() {
 		userRouters.GET("profile", userController.Profile)
 		userRouters.POST("profile", userController.ModifyProfile)
 		userRouters.POST("profile/change_password", userController.ChangePassword)
+		userRouters.POST("profile/logout", userController.LogoutUser)
 	}
 
 	circleRouters := r.Group("api/circle", middleware.AuthorizeJWT(jwtService))
 	{
-		circleRouters.POST("/insert", circleController.Insert)
+		circleRouters.POST("/add", circleController.Insert)
 		circleRouters.DELETE("/delete", circleController.Delete)
 		circleRouters.GET("/all", circleController.All)
-		circleRouters.GET("/find", circleController.FindByID)
 	}
 
 	friendRouters := r.Group("api/friend", middleware.AuthorizeJWT(jwtService))

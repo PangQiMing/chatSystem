@@ -12,20 +12,19 @@ import (
 	"strconv"
 )
 
-type MomentController interface {
+type CircleController interface {
 	All(ctx *gin.Context)
-	FindByID(ctx *gin.Context)
 	Insert(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 }
 
-type momentController struct {
-	momentService service.MomentService
+type circleController struct {
+	circleService service.CircleService
 	jwtService    service.JWTService
 }
 
-func NewMomentController(momentService service.MomentService, jwtService service.JWTService) MomentController {
-	return &momentController{momentService: momentService, jwtService: jwtService}
+func NewCircleController(circleService service.CircleService, jwtService service.JWTService) CircleController {
+	return &circleController{circleService: circleService, jwtService: jwtService}
 }
 
 // All 获取我的动态
@@ -38,7 +37,7 @@ func NewMomentController(momentService service.MomentService, jwtService service
 // @Produce json
 // @Success 200 {string} ok
 // @Router /api/moment/all [get]
-func (b *momentController) All(ctx *gin.Context) {
+func (b *circleController) All(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	id := b.getUserIdByToken(authHeader)
 
@@ -48,29 +47,9 @@ func (b *momentController) All(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	moments := b.momentService.All(momentID)
+	moments := b.circleService.All(momentID)
 	response := helper.BuildResponse(true, "ok!", moments)
 	ctx.JSON(http.StatusOK, response)
-}
-
-func (b *momentController) FindByID(ctx *gin.Context) {
-	authHeader := ctx.GetHeader("Authorization")
-	momentID := b.getUserIdByToken(authHeader)
-
-	id, err := strconv.ParseUint(momentID, 10, 64)
-	if err != nil {
-		response := helper.BuildErrResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-	moment := b.momentService.FindByID(id)
-	if (moment == entity.Circle{}) {
-		response := helper.BuildErrResponse("Data not found", "No data with give id", helper.EmptyObj{})
-		ctx.AbortWithStatusJSON(http.StatusNotFound, response)
-	} else {
-		response := helper.BuildResponse(true, "ok!", moment)
-		ctx.JSON(http.StatusOK, response)
-	}
 }
 
 // Insert 发布我的动态
@@ -85,9 +64,9 @@ func (b *momentController) FindByID(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {string} ok
 // @Router /api/moment/insert [post]
-func (b *momentController) Insert(ctx *gin.Context) {
-	var momentCreateDTO dto.CircleCreateDTO
-	err := ctx.ShouldBind(&momentCreateDTO)
+func (b *circleController) Insert(ctx *gin.Context) {
+	var circleCreateDTO dto.CircleCreateDTO
+	err := ctx.ShouldBind(&circleCreateDTO)
 	if err != nil {
 		response := helper.BuildErrResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
@@ -96,9 +75,9 @@ func (b *momentController) Insert(ctx *gin.Context) {
 		userID := b.getUserIdByToken(authHeader)
 		convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 		if err == nil {
-			momentCreateDTO.UserID = convertedUserID
+			circleCreateDTO.UserID = convertedUserID
 		}
-		result := b.momentService.Insert(momentCreateDTO)
+		result := b.circleService.Insert(circleCreateDTO)
 		response := helper.BuildResponse(true, "ok!", result)
 		ctx.JSON(http.StatusOK, response)
 	}
@@ -115,7 +94,7 @@ func (b *momentController) Insert(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {string} ok
 // @Router /api/moment/delete [delete]
-func (b *momentController) Delete(ctx *gin.Context) {
+func (b *circleController) Delete(ctx *gin.Context) {
 	var moment entity.Circle
 	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
 	if err != nil {
@@ -125,8 +104,8 @@ func (b *momentController) Delete(ctx *gin.Context) {
 	moment.ID = id
 	authHeader := ctx.GetHeader("Authorization")
 	userID := b.getUserIdByToken(authHeader)
-	if b.momentService.IsAllowedToEdit(userID, moment.ID) {
-		b.momentService.Delete(moment)
+	if b.circleService.IsAllowedToDelete(userID, moment.ID) {
+		b.circleService.Delete(moment)
 		response := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
 		ctx.JSON(http.StatusOK, response)
 	} else {
@@ -135,7 +114,7 @@ func (b *momentController) Delete(ctx *gin.Context) {
 	}
 }
 
-func (b *momentController) getUserIdByToken(tokenStr string) string {
+func (b *circleController) getUserIdByToken(tokenStr string) string {
 	token, err := b.jwtService.ValidateToken(tokenStr)
 	if err != nil {
 		panic(err.Error())
