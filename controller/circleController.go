@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -68,6 +69,7 @@ func (b *circleController) Insert(ctx *gin.Context) {
 	var circleCreateDTO dto.CircleCreateDTO
 	err := ctx.ShouldBind(&circleCreateDTO)
 	if err != nil {
+		log.Println(err)
 		response := helper.BuildErrResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {

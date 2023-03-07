@@ -6,19 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="80f7f3b2-6887-4041-afd0-60f88b034355" name="变更" comment="0.0.1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/authController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/authController.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controller/circleController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/circleController.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/userController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/userController.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dto/circleDTO.go" beforeDir="false" afterPath="$PROJECT_DIR$/dto/circleDTO.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dto/userDto.go" beforeDir="false" afterPath="$PROJECT_DIR$/dto/userDto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity/circle.go" beforeDir="false" afterPath="$PROJECT_DIR$/entity/circle.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/circleRepository.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/circleRepository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/userRepository.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/authService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/authService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/circleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/circleService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/userService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
