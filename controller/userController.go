@@ -67,6 +67,7 @@ func (u *userController) ModifyProfile(ctx *gin.Context) {
 	var userUpdateDTO dto.UserUpdateDTO
 	errDTO := ctx.ShouldBind(&userUpdateDTO)
 	if errDTO != nil {
+		log.Println(errDTO)
 		response := helper.BuildErrResponse("处理请求错误...", errDTO.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
@@ -81,21 +82,33 @@ func (u *userController) ModifyProfile(ctx *gin.Context) {
 	if err != nil {
 		panic(err.Error())
 	}
-
+	user := u.userService.FindUserByID(id)
 	//上传头像图片
-	file, _ := ctx.FormFile("file")
-	name := ctx.PostForm("avatar")
-	filename := name + ".jpg"
-	if err := ctx.SaveUploadedFile(file, "./static"+filename); err != nil {
-		response := helper.BuildErrResponse("图片上传失败...", err.Error(), helper.EmptyObj{})
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
+	//file, _ := ctx.FormFile("file")
+	//name := ctx.PostForm("avatar")
+	//filename := name + ".jpg"
+	//if err := ctx.SaveUploadedFile(file, "./static"+filename); err != nil {
+	//	response := helper.BuildErrResponse("图片上传失败...", err.Error(), helper.EmptyObj{})
+	//	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+	//	return
+	//}
 
-	userUpdateDTO.UserId = id
-	userUpdateDTO.Avatar = "./static" + filename
-	user := u.userService.Update(userUpdateDTO)
-	response := helper.BuildResponse(true, "ok!", user)
+	user.UserId = id
+	if userUpdateDTO.Avatar != "" {
+		user.Avatar = userUpdateDTO.Avatar
+	}
+	if userUpdateDTO.NickName != "" {
+		user.NickName = userUpdateDTO.NickName
+	}
+	if userUpdateDTO.Avatar != "" {
+		user.Sex = userUpdateDTO.Sex
+	}
+	if userUpdateDTO.Avatar != "" {
+		user.Age = userUpdateDTO.Age
+	}
+	//userUpdateDTO.Avatar = "./static" + filename
+	result := u.userService.Update(user)
+	response := helper.BuildResponse(true, "用户资料修改成功", result)
 	ctx.JSON(http.StatusOK, response)
 }
 

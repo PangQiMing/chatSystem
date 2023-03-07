@@ -1,16 +1,13 @@
 package service
 
 import (
-	"chat/dto"
 	"chat/entity"
 	"chat/repository"
-	"github.com/mashingan/smapping"
-	"log"
 )
 
 type UserService interface {
 	UpdateUserStatus(user entity.User) entity.User
-	Update(user dto.UserUpdateDTO) entity.User
+	Update(user entity.User) entity.User
 	Profile(userID string) entity.User
 	ChangePass(userChangePass entity.User) entity.User
 	FindByEmail(email string) entity.User
@@ -30,13 +27,13 @@ func (service *userService) UpdateUserStatus(user entity.User) entity.User {
 	return service.userRepository.UpdateUserStatus(user)
 }
 
-func (service *userService) Update(user dto.UserUpdateDTO) entity.User {
-	userToUpdate := entity.User{}
-	err := smapping.FillStruct(&userToUpdate, smapping.MapFields(&user))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
-	}
-	updateUser := service.userRepository.UpdateUser(userToUpdate)
+func (service *userService) Update(user entity.User) entity.User {
+	//userToUpdate := entity.User{}
+	//err := smapping.FillStruct(&userToUpdate, smapping.MapFields(&user))
+	//if err != nil {
+	//	log.Fatalf("Failed map %v", err)
+	//}
+	updateUser := service.userRepository.UpdateUser(user)
 	return updateUser
 }
 

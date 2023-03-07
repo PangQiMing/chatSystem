@@ -41,13 +41,6 @@ func (db *userConn) UpdateUserStatus(user entity.User) entity.User {
 }
 
 func (db *userConn) UpdateUser(user entity.User) entity.User {
-	if user.Password != "" {
-		user.Password = hashAndSalt([]byte(user.Password))
-	} else {
-		var tempUser entity.User
-		db.connDB.Find(&tempUser, user.UserId)
-		user.Password = tempUser.Password
-	}
 	db.connDB.Save(&user)
 	return user
 }
