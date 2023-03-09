@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -16,15 +17,18 @@ type FriendController interface {
 	Insert(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	AllFriend(ctx *gin.Context)
+	FindFriendByEmail(ctx *gin.Context)
+	ShowAddFriendList(ctx *gin.Context)
 }
 
 type friendController struct {
 	friendService service.FriendService
 	jwtService    service.JWTService
+	userService   service.UserService
 }
 
-func NewFriendController(friendService service.FriendService, jwtService service.JWTService) FriendController {
-	return &friendController{friendService: friendService, jwtService: jwtService}
+func NewFriendController(friendService service.FriendService, userService service.UserService, jwtService service.JWTService) FriendController {
+	return &friendController{friendService: friendService, userService: userService, jwtService: jwtService}
 }
 
 // Insert 添加好友
@@ -37,12 +41,12 @@ func NewFriendController(friendService service.FriendService, jwtService service
 // @Accept json
 // @Produce json
 // @Success 200 {string} ok
-// @Router /api/friend [post]
+// @Router /api/friend/add [post]
 func (f *friendController) Insert(ctx *gin.Context) {
-	var friendDTO dto.FriendDTO
-	err := ctx.ShouldBind(&friendDTO)
+	var addFriendDTO dto.AddFriendDTO
+	err := ctx.ShouldBind(&addFriendDTO)
 	if err != nil {
-		response := helper.BuildErrResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		response := helper.BuildErrResponse("处理请求失败...", err.Error(), helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
@@ -50,19 +54,19 @@ func (f *friendController) Insert(ctx *gin.Context) {
 	userID := f.getUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err == nil {
-		friendDTO.UserID = convertedUserID
+		addFriendDTO.UserID = convertedUserID
 	}
-	result, res := f.friendService.Insert(friendDTO)
+	result, res := f.friendService.Insert(addFriendDTO)
 	if res == 1 {
-		response := helper.BuildErrResponse("system xxx", "friend already exists", helper.EmptyObj{})
+		response := helper.BuildErrResponse("该用户已经是你的好友", "friend already exists", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	} else if res == -1 {
-		response := helper.BuildErrResponse("system xxx", "not found the friend ", helper.EmptyObj{})
+		response := helper.BuildErrResponse("查找不到该用户", "not found the friend ", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	response := helper.BuildResponse(true, "success", result)
+	response := helper.BuildResponse(true, "添加成功", result)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -115,6 +119,51 @@ func (f *friendController) AllFriend(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, response)
 	} else {
 		response := helper.BuildErrResponse("invalid operation", "There is not friend in your list", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+	}
+}
+
+func (f *friendController) FindFriendByEmail(ctx *gin.Context) {
+	var friendSearch dto.FriendDTO
+	err := ctx.ShouldBind(&friendSearch)
+	if err != nil {
+		log.Println(err)
+		response := helper.BuildErrResponse("处理请求失败...", err.Error(), helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+	authHeader := ctx.GetHeader("Authorization")
+	userID := f.getUserIdByToken(authHeader)
+	_, err = strconv.ParseUint(userID, 10, 64)
+	if err != nil {
+		response := helper.BuildErrResponse("处理请求失败...", "token错误", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+	}
+	friend := f.userService.FindByEmail(friendSearch.Email)
+	if (friend == entity.User{}) {
+		response := helper.BuildErrResponse("查找不到此邮箱", "", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		response := helper.BuildResponse(true, "ok!", friend)
+		ctx.JSON(http.StatusOK, response)
+	}
+}
+
+func (f *friendController) ShowAddFriendList(ctx *gin.Context) {
+	authHeader := ctx.GetHeader("Authorization")
+	userID := f.getUserIdByToken(authHeader)
+	id, err := strconv.ParseUint(userID, 10, 64)
+	if err != nil {
+		response := helper.BuildErrResponse("处理请求失败...", "token错误", helper.EmptyObj{})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+	}
+	user := f.userService.FindUserByID(id)
+	result := f.friendService.ShowAddFriendList(user.Email)
+	if len(result) > 0 {
+		response := helper.BuildResponse(true, "ok!", result)
+		ctx.JSON(http.StatusOK, response)
+	} else {
+		response := helper.BuildErrResponse("当前没有新朋友", "", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
 }

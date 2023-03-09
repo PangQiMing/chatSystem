@@ -28,11 +28,6 @@ func (service *userService) UpdateUserStatus(user entity.User) entity.User {
 }
 
 func (service *userService) Update(user entity.User) entity.User {
-	//userToUpdate := entity.User{}
-	//err := smapping.FillStruct(&userToUpdate, smapping.MapFields(&user))
-	//if err != nil {
-	//	log.Fatalf("Failed map %v", err)
-	//}
 	updateUser := service.userRepository.UpdateUser(user)
 	return updateUser
 }

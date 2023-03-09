@@ -9,9 +9,10 @@ import (
 )
 
 type FriendService interface {
-	Insert(friendDTO dto.FriendDTO) (entity.Friend, int64)
+	Insert(addFriendDTO dto.AddFriendDTO) (entity.Friend, int64)
 	AllFriend(userID uint64) []entity.Friend
 	Delete(friend entity.Friend, userID uint64)
+	ShowAddFriendList(email string) []entity.Friend
 	isFriendAlready(friend entity.Friend) bool
 	friendNotInDB(friend entity.Friend) bool
 }
@@ -24,9 +25,9 @@ func NewFriendService(friendRepository repository.FriendRepository) FriendServic
 	return &friendService{friendRepository: friendRepository}
 }
 
-func (service *friendService) Insert(friendDTO dto.FriendDTO) (entity.Friend, int64) {
+func (service *friendService) Insert(addFriendDTO dto.AddFriendDTO) (entity.Friend, int64) {
 	var friend entity.Friend
-	err := smapping.FillStruct(&friend, smapping.MapFields(&friendDTO))
+	err := smapping.FillStruct(&friend, smapping.MapFields(&addFriendDTO))
 	if err != nil {
 		log.Fatalf("Failed map %v", err)
 	}
@@ -46,6 +47,10 @@ func (service *friendService) AllFriend(userID uint64) []entity.Friend {
 
 func (service *friendService) Delete(friend entity.Friend, userID uint64) {
 	service.friendRepository.Delete(friend, userID)
+}
+
+func (service *friendService) ShowAddFriendList(email string) []entity.Friend {
+	return service.friendRepository.ShowAddFriendList(email)
 }
 
 func (service *friendService) isFriendAlready(friend entity.Friend) bool {

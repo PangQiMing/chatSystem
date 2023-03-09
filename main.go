@@ -37,7 +37,7 @@ var (
 	authController         = controller.NewAuthController(authService, jwtService)
 	userController         = controller.NewUserController(userService, jwtService)
 	circleController       = controller.NewCircleController(circleService, jwtService)
-	friendController       = controller.NewFriendController(friendService, jwtService)
+	friendController       = controller.NewFriendController(friendService, userService, jwtService)
 	groupController        = controller.NewGroupController(groupService, jwtService)
 	groupMembersController = controller.NewGroupMembersController(groupMembersService, jwtService)
 )
@@ -77,7 +77,9 @@ func main() {
 	friendRouters := r.Group("api/friend", middleware.AuthorizeJWT(jwtService))
 	{
 		friendRouters.GET("/", friendController.AllFriend)
-		friendRouters.POST("/", friendController.Insert)
+		friendRouters.POST("/add", friendController.Insert)
+		friendRouters.POST("/search", friendController.FindFriendByEmail)
+		friendRouters.GET("/show", friendController.ShowAddFriendList)
 		friendRouters.DELETE("/:friend_email", friendController.Delete)
 	}
 
