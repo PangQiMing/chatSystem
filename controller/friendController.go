@@ -5,8 +5,6 @@ import (
 	"chat/entity"
 	"chat/helper"
 	"chat/service"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -51,7 +49,7 @@ func (f *friendController) Insert(ctx *gin.Context) {
 		return
 	}
 	authHeader := ctx.GetHeader("Authorization")
-	userID := f.getUserIdByToken(authHeader)
+	userID := f.jwtService.GetUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err == nil {
 		addFriendDTO.UserID = convertedUserID
@@ -86,7 +84,7 @@ func (f *friendController) Delete(ctx *gin.Context) {
 	friendEmail := ctx.Param("friend_email")
 	friend.FriendEmail = friendEmail
 	authHeader := ctx.GetHeader("Authorization")
-	userID := f.getUserIdByToken(authHeader)
+	userID := f.jwtService.GetUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err == nil {
 		friend.UserID = convertedUserID
@@ -111,7 +109,7 @@ func (f *friendController) Delete(ctx *gin.Context) {
 // @Router /api/friend [get]
 func (f *friendController) AllFriend(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
-	userID := f.getUserIdByToken(authHeader)
+	userID := f.jwtService.GetUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err == nil {
 		friend := f.friendService.AllFriend(convertedUserID)
@@ -133,7 +131,7 @@ func (f *friendController) FindFriendByEmail(ctx *gin.Context) {
 		return
 	}
 	authHeader := ctx.GetHeader("Authorization")
-	userID := f.getUserIdByToken(authHeader)
+	userID := f.jwtService.GetUserIdByToken(authHeader)
 	_, err = strconv.ParseUint(userID, 10, 64)
 	if err != nil {
 		response := helper.BuildErrResponse("处理请求失败...", "token错误", helper.EmptyObj{})
@@ -151,7 +149,7 @@ func (f *friendController) FindFriendByEmail(ctx *gin.Context) {
 
 func (f *friendController) ShowAddFriendList(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
-	userID := f.getUserIdByToken(authHeader)
+	userID := f.jwtService.GeneratedToken(authHeader)
 	id, err := strconv.ParseUint(userID, 10, 64)
 	if err != nil {
 		response := helper.BuildErrResponse("处理请求失败...", "token错误", helper.EmptyObj{})
@@ -166,14 +164,4 @@ func (f *friendController) ShowAddFriendList(ctx *gin.Context) {
 		response := helper.BuildErrResponse("当前没有新朋友", "", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
-}
-
-func (f *friendController) getUserIdByToken(tokenStr string) string {
-	token, err := f.jwtService.ValidateToken(tokenStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["user_id"])
-	return id
 }

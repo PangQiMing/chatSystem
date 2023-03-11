@@ -10,6 +10,7 @@ import (
 type JWTService interface {
 	GeneratedToken(userID string) string
 	ValidateToken(token string) (*jwt.Token, error)
+	GetUserIdByToken(tokenStr string) string
 }
 
 type jwtCustomClaim struct {
@@ -63,4 +64,14 @@ func (j *jwtService) ValidateToken(tokenStr string) (*jwt.Token, error) {
 		}
 		return []byte(j.secretKey), nil
 	})
+}
+
+func (j *jwtService) GetUserIdByToken(tokenStr string) string {
+	token, err := j.ValidateToken(tokenStr)
+	if err != nil {
+		panic(err.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	id := fmt.Sprintf("%v", claims["user_id"])
+	return id
 }

@@ -6,7 +6,6 @@ import (
 	"chat/helper"
 	"chat/service"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -49,7 +48,7 @@ func (gm *groupMemberController) Insert(ctx *gin.Context) {
 		return
 	}
 	authHeader := ctx.GetHeader("Authorization")
-	userID := gm.getUserIdByToken(authHeader)
+	userID := gm.jwtService.GetUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err == nil {
 		groupMembersDTO.UserID = convertedUserID
@@ -77,7 +76,7 @@ func (gm *groupMemberController) Delete(ctx *gin.Context) {
 	convertedGroupID, _ := strconv.ParseUint(groupID, 10, 64)
 	groupMembers.GroupID = convertedGroupID
 	authHeader := ctx.GetHeader("Authorization")
-	UserID := gm.getUserIdByToken(authHeader)
+	UserID := gm.jwtService.GetUserIdByToken(authHeader)
 	convertedUserID, err := strconv.ParseUint(UserID, 10, 64)
 	if err == nil {
 		groupMembers.UserID = convertedUserID
@@ -85,14 +84,4 @@ func (gm *groupMemberController) Delete(ctx *gin.Context) {
 	gm.groupMembersService.Delete(groupMembers)
 	response := helper.BuildResponse(true, "Delete a GroupMembers", helper.EmptyObj{})
 	ctx.JSON(http.StatusOK, response)
-}
-
-func (gm *groupMemberController) getUserIdByToken(tokenStr string) string {
-	token, err := gm.jwtService.ValidateToken(tokenStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["user_id"])
-	return id
 }

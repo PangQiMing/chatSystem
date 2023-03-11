@@ -4,8 +4,6 @@ import (
 	"chat/dto"
 	"chat/helper"
 	"chat/service"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -47,7 +45,7 @@ func (g *groupController) Insert(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusOK, response)
 	} else {
 		authHeader := ctx.GetHeader("Authorization")
-		groupLeaderID := g.getUserIdByToken(authHeader)
+		groupLeaderID := g.jwtService.GetUserIdByToken(authHeader)
 		convertedGroupLeaderID, err := strconv.ParseUint(groupLeaderID, 10, 64)
 		if err == nil {
 			groupCreateDTO.GroupLeaderID = convertedGroupLeaderID
@@ -79,7 +77,7 @@ func (g *groupController) Delete(ctx *gin.Context) {
 		return
 	}
 	authHeader := ctx.GetHeader("Authorization")
-	groupLeaderID := g.getUserIdByToken(authHeader)
+	groupLeaderID := g.jwtService.GetUserIdByToken(authHeader)
 	convertedGroupLeaderID, _ := strconv.ParseUint(groupLeaderID, 10, 64)
 	if g.groupService.Delete(groupID, convertedGroupLeaderID) {
 		response := helper.BuildResponse(true, "Delete Success", helper.EmptyObj{})
@@ -119,7 +117,7 @@ func (g *groupController) Update(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusOK, response)
 	}
 	authHeader := ctx.GetHeader("Authorization")
-	groupLeaderID := g.getUserIdByToken(authHeader)
+	groupLeaderID := g.jwtService.GetUserIdByToken(authHeader)
 	convertedGroupLeaderID, err := strconv.ParseUint(groupLeaderID, 10, 64)
 	if err == nil {
 		groupUpdateDTO.GroupLeaderID = convertedGroupLeaderID
@@ -146,7 +144,7 @@ func (g *groupController) Update(ctx *gin.Context) {
 // @Router /api/group/groupsIManage [get]
 func (g *groupController) GroupsIManage(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
-	groupLeaderID := g.getUserIdByToken(authHeader)
+	groupLeaderID := g.jwtService.GetUserIdByToken(authHeader)
 	convertedGroupLeaderID, err := strconv.ParseUint(groupLeaderID, 10, 64)
 	if err == nil {
 		result := g.groupService.MyGroup(convertedGroupLeaderID)
@@ -156,14 +154,4 @@ func (g *groupController) GroupsIManage(ctx *gin.Context) {
 		response := helper.BuildErrResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
-}
-
-func (g *groupController) getUserIdByToken(tokenStr string) string {
-	token, err := g.jwtService.ValidateToken(tokenStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["user_id"])
-	return id
 }

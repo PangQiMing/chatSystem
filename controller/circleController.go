@@ -5,8 +5,6 @@ import (
 	"chat/entity"
 	"chat/helper"
 	"chat/service"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -40,7 +38,7 @@ func NewCircleController(circleService service.CircleService, jwtService service
 // @Router /api/moment/all [get]
 func (b *circleController) All(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
-	id := b.getUserIdByToken(authHeader)
+	id := b.jwtService.GetUserIdByToken(authHeader)
 
 	momentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -74,7 +72,7 @@ func (b *circleController) Insert(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
 		authHeader := ctx.GetHeader("Authorization")
-		userID := b.getUserIdByToken(authHeader)
+		userID := b.jwtService.GetUserIdByToken(authHeader)
 		convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 		if err == nil {
 			circleCreateDTO.UserID = convertedUserID
@@ -105,7 +103,7 @@ func (b *circleController) Delete(ctx *gin.Context) {
 	}
 	moment.ID = id
 	authHeader := ctx.GetHeader("Authorization")
-	userID := b.getUserIdByToken(authHeader)
+	userID := b.jwtService.GetUserIdByToken(authHeader)
 	if b.circleService.IsAllowedToDelete(userID, moment.ID) {
 		b.circleService.Delete(moment)
 		response := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
@@ -114,14 +112,4 @@ func (b *circleController) Delete(ctx *gin.Context) {
 		response := helper.BuildErrResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 	}
-}
-
-func (b *circleController) getUserIdByToken(tokenStr string) string {
-	token, err := b.jwtService.ValidateToken(tokenStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["user_id"])
-	return id
 }
