@@ -53,25 +53,7 @@ go get github.com/gorilla/websocket
 
 ### 群组广播通信
 
-### 朋友圈
-~~~json
-{
-	"user_id": 0,
-	"avatar": "头像URL",
-	"nick_name": "JACK",
-	"email": "123456789@qq.com",
-	"password": "12345678",
-	"age": "20",
-	"sex": "男",
-	"user_status": 0,
-	"circle_id": 122,
-	"circle": {
-		"id": 122,
-		"content": "内容：HelloWorld",
-		"picture_url": "图片url_1"
-	}
-}
-~~~
+
 
 
 

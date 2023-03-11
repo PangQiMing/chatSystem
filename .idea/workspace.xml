@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="80f7f3b2-6887-4041-afd0-60f88b034355" name="变更" comment="0.0.1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/circleController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/circleController.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/friendController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/friendController.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/groupController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/groupController.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/groupMemberController.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/groupMemberController.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/jwtService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/jwtService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
